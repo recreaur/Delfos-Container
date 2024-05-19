@@ -16,7 +16,7 @@ Delfos es una aplicación web desarrollada por la Universidad de La Rioja que ti
 1. Clonar el proyecto y acceder a la carpeta generada:
 ```sh
 git clone https://github.com/recreaur/Delfos-Container.git
-cd Delfos
+cd Delfos-Container
 ```
 
 2. Cambiar permisos necesarios

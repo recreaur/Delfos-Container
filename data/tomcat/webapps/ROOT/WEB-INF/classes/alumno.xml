@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <package name="alumno" namespace="/alumno" extends="default">
+		
+	<interceptors>
+	    <interceptor-stack name="alumnSecureStack">
+		<interceptor-ref name="devModeInterceptor"/>		
+		<interceptor-ref name="perfiles">
+		    <param name="perfilRequerido">ALUMNO</param>
+		</interceptor-ref>
+		<interceptor-ref name="exception">
+		    <param name="logEnabled">true</param>
+		    <param name="logLevel">error</param>
+		</interceptor-ref>
+                <interceptor-ref name="servletConfig"/>
+                <interceptor-ref name="params">
+                    <param name="excludeParams">dojo\..*,^struts\..*,^session\..*,^request\..*,^application\..*,^servlet(Request|Response)\..*,parameters\...*</param>
+                </interceptor-ref>
+		<interceptor-ref name="prepare"/>
+                <interceptor-ref name="conversionError"/>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+		<interceptor-ref name="cachingHeadersInterceptor"/>
+	    </interceptor-stack>
+	</interceptors>
+
+	<default-interceptor-ref name="alumnSecureStack"/>
+		
+	<default-action-ref name="notfound"/>
+	
+	<action name="" class="es.didiez.actions.alumno.SeccionPanel">
+	    <result type="tiles">inicioAlumno</result>
+	</action>
+	
+	<action name="inicio" class="es.didiez.actions.alumno.SeccionPanel">
+	    <result type="tiles">inicioAlumno</result>
+	</action>
+		
+	<!-- Action para comenzar una practica -->
+		
+	<action name="practica" class="es.didiez.actions.alumno.RealizarPractica">
+	    <result type="redirectAction">ejercicio</result>
+	    <result name="input" type="redirectAction">inicio</result>
+	</action>
+		
+	<!-- Action para comenzar un repaso -->
+		
+	<action name="repaso" class="es.didiez.actions.alumno.RealizarRepaso">
+	    <result type="json"></result>
+	    <result name="input" type="json">
+		<param name="includeProperties">
+		    actionErrors.*,
+		    actionMessages.*,
+		    fieldErrors.*
+		</param>
+	    </result>
+	</action>
+		
+	<!-- Action para abandonar una practica -->
+		
+	<action name="abandonarPractica" class="es.didiez.actions.alumno.RealizarPractica" method="abandonarPractica">
+	    <result type="redirectAction">inicio</result>
+	</action>
+		
+	<!-- Action para abandonar un repaso -->
+		
+	<action name="abandonarRepaso" class="es.didiez.actions.alumno.RealizarRepaso" method="abandonarRepaso">
+	    <result type="redirectAction">inicio</result>
+	</action>
+		
+	<!-- Action para terminar una practica -->
+		
+	<action name="terminarPractica" class="es.didiez.actions.alumno.RealizarPractica" method="terminarPractica">
+	    <result type="json">
+		<param name="includeProperties">
+		    redirect
+		</param>
+	    </result>
+	    <result name="input" type="json">
+		<param name="includeProperties">
+		    error
+		</param>
+	    </result>
+	</action>
+		
+	<!-- Actions para la muestra por pantalla, la prueba y el guardado de un ejercicio -->		
+		
+	<action name="ejercicio" class="es.didiez.actions.alumno.RealizarEjercicio">
+	    <result type="tiles">ejercicio</result>
+	    <result name="input" type="redirectAction">inicio</result>
+	    <result name="error" type="redirectAction">inicio</result>
+	</action>
+		
+	<!-- Actions para la muestra por pantalla, la prueba y el guardado de un ejercicio de repaso -->		
+		
+	<action name="ejercicioRepaso" class="es.didiez.actions.alumno.RealizarEjercicioRepaso">
+	    <result type="tiles">ejercicioRepaso</result>
+	    <result name="input" type="redirectAction">inicio</result>
+	    <result name="error" type="redirectAction">inicio</result>
+	</action>
+		
+	<!-- Action para probar un  ejercicio de una practica -->
+		
+	<action name="probarEjercicioJSON" class="es.didiez.actions.alumno.RealizarEjercicio" method="probar">
+	    <result type="json">
+		<param name="includeProperties">
+		    resultadoAlumno, correcto, mensajesAdvertencias.*
+		</param>
+	    </result>
+	    <result name="error" type="json">
+		<param name="includeProperties">
+		    error
+		</param>
+	    </result>
+	</action>
+		
+	<!-- Action para probar un  ejercicio de Repaso -->
+		
+	<action name="probarEjercicioRepaso" class="es.didiez.actions.alumno.RealizarEjercicioRepaso" method="probar">
+	    <result type="json">
+		<param name="includeProperties">
+		    resultadoAlumno, correcto, mensajesAdvertencias.*
+		</param>
+	    </result>
+	    <result name="error" type="json">
+		<param name="includeProperties">
+		    error
+		</param>
+	    </result>
+	</action>
+		
+	<!-- Action para guardar un ejercicio de una practica -->
+		
+	<action name="guardarEjercicioJSON" class="es.didiez.actions.alumno.RealizarEjercicio" method="guardar">
+	    <result type="json">
+		<param name="includeProperties">
+		    resultadoAlumno, correcto, guardado, mensajesAdvertencias.*
+		</param>
+	    </result>
+	    <result name="error" type="json">
+		<param name="includeProperties">
+		    error
+		</param>
+	    </result>
+	</action>
+		
+	<!-- Action para guardar un ejercicio de Repaso -->
+		
+	<action name="guardarEjercicioRepaso" class="es.didiez.actions.alumno.RealizarEjercicioRepaso" method="guardar">
+	    <result type="json">
+		<param name="includeProperties">
+		    resultadoAlumno, correcto, guardado, mensajesAdvertencias.*
+		</param>
+	    </result>
+	    <result name="error" type="json">
+		<param name="includeProperties">
+		    error
+		</param>
+	    </result>
+	</action>
+		
+	<!-- Action para mostrar el resumen de una practica -->
+		
+	<action name="resumenPractica" class="es.didiez.actions.alumno.RealizarEjercicio">
+	    <result type="tiles">resumenPractica</result>
+	    <result name="input" type="redirectAction">inicio</result>
+	</action>
+		
+	<action name="mensajeConfirmarEnviarPractica" class="es.didiez.actions.alumno.RealizarEjercicio">
+	    <result>/alumno/confirmarEnvioPractica.jsp</result>
+	</action>
+		
+	<action name="printResumen" class="es.didiez.actions.alumno.RealizarPractica" method="printResumen">
+	    <result name="success" type="stream">
+		<param name="contentType">application/pdf</param>
+		<param name="inputName">fichero</param>
+		<param name="contentDisposition">attachment;filename="resumen.pdf"</param>
+		<param name="bufferSize">1024</param>
+	    </result>
+	    <result name="input" type="redirectAction">inicio</result>
+	</action>
+		
+	<!-- Action para mostrar el resumen de un repaso -->
+		
+	<action name="resumenRepaso" class="es.didiez.actions.alumno.RealizarEjercicioRepaso">
+	    <result type="tiles">resumenRepaso</result>
+	</action>
+		
+	<action name="printResumenRepaso" class="es.didiez.actions.alumno.RealizarRepaso" method="printResumen">
+	    <result name="success" type="stream">
+		<param name="contentType">application/pdf</param>
+		<param name="inputName">fichero</param>
+		<param name="contentDisposition">attachment;filename="resumen.pdf"</param>
+		<param name="bufferSize">1024</param>
+	    </result>
+	    <result name="input" type="redirectAction">inicio</result>
+	</action>
+
+    </package>
+</struts>

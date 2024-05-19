@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <package name="resultados-grid" namespace="/profesor" extends="profesor">
+	<global-results>
+	    <result type="json-secured">
+		<param name="ignoreHierarchy">false</param>
+		<param name="includeProperties">
+		    rows.*, page, total, records
+		</param>
+	    </result>
+	</global-results>
+	
+	<action name="getProfesores"		class="es.didiez.actions.profesor.CRUDProfesores" method="input"></action>
+	<action name="getAlumnos"		class="es.didiez.actions.profesor.CRUDAlumnos" method="input"></action>
+	<action name="getEsquemas"		class="es.didiez.actions.profesor.CRUDEsquemas" method="input"></action>
+	<action name="getEjercicios"		class="es.didiez.actions.profesor.CRUDEjercicios" method="input"></action>
+	<action name="getPracticas"		class="es.didiez.actions.profesor.CRUDPracticas" method="input"></action>
+	<action name="getEjerciciosDisponibles" class="es.didiez.actions.profesor.CRUDEjerciciosPracticas" method="ejerciciosDisponibles"></action>
+	<action name="getEjerciciosPractica"	class="es.didiez.actions.profesor.CRUDEjerciciosPracticas" method="ejerciciosPractica"></action>
+        <action name="getRepasos"		class="es.didiez.actions.profesor.CRUDRepasos" method="input"></action>
+	<action name="cambiarCurso"		class="es.didiez.actions.profesor.CRUDAlumnos" method="cambiarCurso"></action>
+	
+    </package>
+    
+    <package name="entidades-crud" namespace="/profesor" extends="profesor">
+	<global-results>
+	    <result type="json-secured">
+		<param name="ignoreHierarchy">false</param>
+		<param name="includeProperties">info, usuario\.profesor</param>
+	    </result>
+	    <result name="input" type="json-secured">
+		<param name="ignoreHierarchy">false</param>
+		<param name="includeProperties">error, actionErrors.*, fieldErrors.*, usuario\.profesor</param>
+	    </result>
+	</global-results>
+	
+	<action name="crudProfesor"		class="es.didiez.actions.profesor.CRUDProfesores"></action>
+	<action name="crudAlumno"		class="es.didiez.actions.profesor.CRUDAlumnos"></action>
+	<action name="importarAlumnos"		class="es.didiez.actions.profesor.CRUDAlumnos" method="importarAlumnos"></action>
+	<action name="crudEsquema"		class="es.didiez.actions.profesor.CRUDEsquemas"></action>
+	<action name="subirPDF"			class="es.didiez.actions.profesor.CRUDEsquemas" method="subirPDF"></action>
+	<action name="crudEjercicio"		class="es.didiez.actions.profesor.CRUDEjercicios"></action>
+	<action name="bloquearEjercicios"	class="es.didiez.actions.profesor.CRUDEjercicios" method="bloquearEjercicios"></action>
+	<action name="desbloquearEjercicios"	class="es.didiez.actions.profesor.CRUDEjercicios" method="desbloquearEjercicios"></action>
+	<action name="importarEjercicios"	class="es.didiez.actions.profesor.CRUDEjercicios" method="importarEjercicios"></action>
+	<action name="crudPractica"		class="es.didiez.actions.profesor.CRUDPracticas"></action>
+	<action name="addEjercicios"		class="es.didiez.actions.profesor.CRUDEjerciciosPracticas" method="addEjercicios"></action>
+	<action name="delEjercicios"		class="es.didiez.actions.profesor.CRUDEjerciciosPracticas" method="delEjercicios"></action>
+	<action name="ordEjercicios"		class="es.didiez.actions.profesor.CRUDEjerciciosPracticas" method="ordEjercicios"></action>
+	
+    </package>
+    
+    <package name="profesor" namespace="/profesor" extends="default">		
+	<interceptors>
+	    <interceptor-stack name="ProfSecureStack">
+		<interceptor-ref name="devModeInterceptor"/>
+		<interceptor-ref name="baseStack">
+		    <param name="perfiles.perfilRequerido">PROFESOR</param>
+		</interceptor-ref>
+	    </interceptor-stack>
+	</interceptors>        
+
+	<default-interceptor-ref name="ProfSecureStack"/>
+	
+	<default-action-ref name="notfound"/>
+	
+	<action name="">
+	    <result type="tiles">inicioProfesor</result>
+	</action>
+		
+	<action name="inicio">
+	    <result type="tiles">inicioProfesor</result>
+	</action>
+	
+	<action name="usuariosConectadosRows" class="es.didiez.actions.profesor.UsuariosConectadosAction">
+	    <result type="json-secured">
+		<param name="includeProperties">rows.*</param>
+	    </result>
+	</action>
+        
+        <action name="practicasFinalizadasJSON" class="es.didiez.actions.profesor.UsuariosConectadosAction" method="practicasFinalizadasAlumno">
+	    <result type="json">
+		<param name="includeProperties">
+		    practicasFinalizadas.*,alumno
+		</param>
+	    </result>
+        </action>
+        
+        <action name="reiniciarSesionJSON" class="es.didiez.actions.profesor.UsuariosConectadosAction" method="reiniciarSesionAlumno">
+            <result type="json"></result>
+        </action>
+	
+	<!-- Seccion gestion Profesores -->
+		
+	<action name="profesores">
+	    <result type="tiles">profesores</result>
+	</action>	
+		
+	<!-- Seccion gestion Alumnos -->
+		
+	<action name="alumnos">
+	    <result type="tiles">alumnos</result>
+	</action>
+		
+	<action name="exportarAlumnos" class="es.didiez.actions.profesor.CRUDAlumnos" method="exportarAlumnos">
+	    <result name="success" type="stream">
+		<param name="contentType">text/plain</param>
+		<param name="inputName">fichero</param>
+		<param name="contentDisposition">attachment;filename="alumnos.csv"</param>
+		<param name="bufferSize">1024</param>
+	    </result>
+	</action>
+		
+	<!-- Seccion gestion Esquemas -->
+		
+	<action name="esquemas">
+	    <result type="tiles">esquemas</result>
+	</action>
+		
+	<!-- Seccion gestion Ejercicios -->
+		
+	<action name="ejercicios" class="es.didiez.actions.profesor.SeccionEjercicios">
+	    <result type="tiles">ejercicios</result>
+	</action>
+		
+	<action name="exportarEjercicios" class="es.didiez.actions.profesor.CRUDEjercicios" method="exportarEjercicios">
+	    <result name="success" type="stream">
+		<param name="contentType">text/xml</param>
+		<param name="inputName">fichero</param>
+		<param name="contentDisposition">attachment;filename="ejercicios.xml"</param>
+		<param name="bufferSize">1024</param>
+	    </result>
+	</action>
+        
+        <action name="comprobarEjercicioJSON" class="es.didiez.actions.profesor.SeccionEjercicios" method="probar">
+	    <result type="json">
+		<param name="includeProperties">
+		    resultadoEjercicio
+		</param>
+	    </result>
+	    <result name="error" type="json">
+		<param name="includeProperties">
+		    error
+		</param>
+	    </result>
+	</action>
+		
+	<!-- Seccion gestion Practicas -->
+		
+	<action name="practicas" class="es.didiez.actions.profesor.SeccionPracticas">
+	    <result type="tiles">practicas</result>
+	</action>
+		
+	<action name="ejerciciosPractica" class="es.didiez.actions.profesor.SeccionEjerciciosPractica">
+	    <result type="tiles">ejerciciosPractica</result>
+	</action>
+		
+	<!-- Seccion entregas -->
+		
+	<action name="entregas" class="es.didiez.actions.profesor.SeccionEntregas">
+	    <result type="tiles">entregas</result>
+	</action>
+		
+	<action name="descargarEntregas" class="es.didiez.actions.profesor.SeccionEntregas" method="descargar">
+	    <result name="success" type="stream">
+		<param name="contentType">application/pdf</param>
+		<param name="inputName">fichero</param>
+		<param name="contentDisposition">attachment;filename="entregas.pdf"</param>
+		<param name="bufferSize">1024</param>
+	    </result>
+	    <result name="input" type="redirectAction">entregas</result>
+	</action>
+        
+        <!-- Sección Repasos -->
+        
+        <action name="repasos" class="es.didiez.actions.profesor.SeccionRepasos">
+            <result type="tiles">repasos</result>
+        </action>
+        
+        <action name="alumnoRepasoDetails" class="es.didiez.actions.profesor.SeccionRepasos" method="alumnoRepasoDetails">
+            <result type="json">
+                <param name="includeProperties">alumnoRepasoJSON.*</param>
+            </result>
+        </action>
+        
+        <action name="alumnoEjerciciosRepasoDetails" class="es.didiez.actions.profesor.SeccionRepasos" method="alumnoEjerciciosRepasoDetails">
+            <result type="json">
+                <param name="includeProperties">alumnoEjerciciosRepasoJSON.*</param>
+            </result>
+        </action>
+    </package>
+</struts>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+<!ELEMENT ejercicios (ejercicio+)>
+<!ELEMENT ejercicio (enunciado,query,dificultad,numsesion,visible?)>
+<!ELEMENT enunciado (#PCDATA)>
+<!ELEMENT query (#PCDATA)>
+<!ELEMENT dificultad (#PCDATA)>
+<!ELEMENT numsesion (#PCDATA)>
+<!ELEMENT visible (#PCDATA)>
+	
+	
+	

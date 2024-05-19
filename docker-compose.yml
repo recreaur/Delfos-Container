@@ -1,0 +1,64 @@
+version: "3.1"
+
+services:
+  tomcat:
+    build: 
+      context: images/tomcat
+      dockerfile: Dockerfile
+      args:
+        - VERSION=9.0
+        - USER=1000
+    restart: "unless-stopped"
+    command:
+      - '/bin/sh'
+      - '-c'
+      - '/bin/sleep 20 && catalina.sh run'
+    user: "1000:1000"
+    depends_on:
+      - db
+    volumes:
+      - ./data/tomcat/webapps:/usr/local/tomcat/webapps
+
+  db:
+    image: "mysql:8.0.31"
+    restart: "unless-stopped"
+    user: "1000:1000"
+    secrets:
+      - db_password
+    environment:
+      - TZ=Europe/Madrid
+      - MYSQL_USER=aplicacionbd
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_password
+      - MYSQL_DATABASE=aplicacionbd
+      - MYSQL_RANDOM_ROOT_PASSWORD='1'
+    volumes:
+      - ./data/db/delfos_0_initial_database.sql:/docker-entrypoint-initdb.d/delfos_0_initial_database.sql:ro
+      - ./data/db/delfos_biblioteca.sql:/docker-entrypoint-initdb.d/delfos_biblioteca.sql:ro
+      - ./data/db/delfos_comercio.sql:/docker-entrypoint-initdb.d/delfos_comercio.sql:ro
+      - ./data/db/delfos_empresa.sql:/docker-entrypoint-initdb.d/delfos_empresa.sql:ro
+      - ./data/db/delfos_universidad.sql:/docker-entrypoint-initdb.d/delfos_universidad.sql:ro
+      - ./data/db/delfos_viajes.sql:/docker-entrypoint-initdb.d/delfos_viajes.sql:ro
+      - ./data/db/delfos_zz_usuarios.sql:/docker-entrypoint-initdb.d/delfos_zz_usuarios.sql:ro
+      - ./data/db/mysql_log:/var/log/mysql
+      - ./data/db/mysql_data:/var/lib/mysql
+      - ./conf/db/my.cnf:/etc/my.cnf:ro
+
+  httpd:
+    build: 
+      context: images/httpd
+      dockerfile: Dockerfile
+      args:
+        - USER=1000
+    restart: "unless-stopped"
+    user: "1000:1000"
+    depends_on:
+      - db
+    volumes:
+      - ./data/tomcat/webapps/ROOT:/usr/local/apache2/htdocs
+    ports:
+      - "127.0.0.1:8888:80"
+
+secrets:
+  db_password:
+    file: ./secrets/db_password_file
+

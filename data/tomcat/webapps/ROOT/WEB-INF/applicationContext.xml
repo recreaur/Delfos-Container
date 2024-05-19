@@ -1,0 +1,155 @@
+<!-- $Id: applicationContext.xml 13954 2013-02-19 09:49:25Z didiez $ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+  http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+  http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+  http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring-2.4.xsd">
+ 
+    <context:property-placeholder location="
+	classpath:aplicacionbd.properties"/>
+    
+    <context:annotation-config />
+    <context:spring-configured />
+    <tx:annotation-driven/>
+    <context:component-scan base-package="es.didiez.dao"/>
+    <context:component-scan base-package="es.didiez.service"/>
+    
+    <aop:aspectj-autoproxy />
+
+    <task:annotation-driven/>
+        
+    <!-- Datasource & Hibernate sessionFactory-->
+    
+    <!-- c3p0 pool configuration -->
+    <!--
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" >
+	<property name="driverClass"  value="${jdbc.driverClass}"/>
+	<property name="jdbcUrl" value="${jdbc.url}"/>
+	<property name="user" value="${jdbc.user}"/>
+	<property name="password" value="${jdbc.password}"/>
+	<property name="initialPoolSize" value="8"/>
+	<property name="minPoolSize" value="8"/>
+	<property name="maxPoolSize" value="100"/>
+	<property name="idleConnectionTestPeriod" value="600"/>
+	<property name="maxIdleTime" value="0"/>
+	<property name="maxStatements" value="50"/>
+	<property name="maxStatementsPerConnection" value="0"/>
+	<property name="acquireIncrement" value="3"/>
+	<property name="acquireRetryAttempts" value="3"/>
+	<property name="acquireRetryDelay" value="1000"/>
+	<property name="autoCommitOnClose" value="false"/>
+	<property name="maxConnectionAge" value="14400"/>
+	<property name="forceIgnoreUnresolvedTransactions" value="false"/>
+	<property name="numHelperThreads" value="20"/>
+	<property name="testConnectionOnCheckin" value="false"/>
+	<property name="testConnectionOnCheckout" value="false"/>
+	<property name="debugUnreturnedConnectionStackTraces" value="false"/>
+	<property name="maxIdleTimeExcessConnections" value="600"/>
+	<property name="breakAfterAcquireFailure" value="false"/>
+	<property name="checkoutTimeout" value="0"/>
+	<property name="unreturnedConnectionTimeout" value="0"/>
+    </bean>
+    -->
+    
+    <!-- Druid pool configuration -->    
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<property name="url" value="${jdbc.url}" />
+	<property name="username" value="${jdbc.user}" />
+	<property name="password" value="${jdbc.password}" />
+	<property name="maxActive" value="20" />
+	<property name="filters" value="stat,log4j" />
+	<property name="initialSize" value="4" />
+	<property name="maxWait" value="60000" />
+	<property name="minIdle" value="4" />
+	<property name="timeBetweenEvictionRunsMillis" value="3000" />
+	<property name="minEvictableIdleTimeMillis" value="300000" />
+	<property name="validationQuery" value="SELECT 1" />
+	<property name="testWhileIdle" value="true" />
+	<property name="testOnBorrow" value="false" />
+	<property name="testOnReturn" value="false" />
+    </bean>
+    
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+	<property name="dataSource" ref="dataSource" />
+	<property name="packagesToScan" value="es.didiez.model"/>
+	<property name="hibernateProperties">
+	    <util:map>
+		<entry key="hibernate.show_sql" value="true" />
+		<entry key="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect"/>
+	    </util:map>
+	</property>
+    </bean>
+    
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	<property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    
+    <!-- Mailer -->
+    
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+	<property name="host" value="${mail.smtp.host}" />
+	<property name="port" value="${mail.smtp.port}" />
+	<property name="username" value="${mail.smtp.user}" />
+	<property name="password" value="${mail.smtp.password}" /> 
+	<property name="javaMailProperties">
+	    <props>
+		<prop key="mail.debug">true</prop>
+		<prop key="mail.smtp.auth">${mail.smtp.auth}</prop>
+		<prop key="mail.smtp.starttls.enable">${mail.smtp.starttls.enable}</prop>
+		<prop key="mail.smtp.ssl.protocols">${mail.smtp.ssl.protocols}</prop>
+	    </props>
+	</property>
+    </bean>
+
+    <bean id="mailer" class="es.didiez.util.Mailer">
+	<property name="mailSender" ref="mailSender" />
+    </bean>
+    
+    <!-- Log4j JMX -->
+    <bean id="loggingMBean" class="es.didiez.util.log.jmxservice.LoggingConfigImpl" />
+
+    <bean id="exporterLogConfig" class="org.springframework.jmx.export.MBeanExporter">
+	<property name="beans">
+	    <map>
+		<entry key="es.didiez.util.log:jmxservice=loggingConfiguration" value-ref="loggingMBean" />
+	    </map>
+	</property>
+	<property name="assembler">
+	    <bean class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
+		<property name="managedInterfaces">
+		    <value>es.didiez.util.log.jmxservice.LoggingConfig</value>
+		</property>            
+	    </bean>
+	</property>
+    </bean>
+    
+    <!-- Druid pool JMX -->
+    <bean id="statMbeanServer" class="com.alibaba.druid.support.spring.MBeanServerFactoryBean" />
+ 
+    <bean id="statManager" class="com.alibaba.druid.stat.JdbcStatManagerFactoryBean" />
+
+    <bean id="statExporter" class="org.springframework.jmx.export.MBeanExporter"
+	lazy-init="false">
+	<property name="beans">
+	    <map>
+		<entry key="com.alibaba.druid:type=JdbcStats" value-ref="statManager" />
+	    </map>
+	</property>
+	<property name="server" ref="statMbeanServer" />
+    </bean>
+        
+</beans>

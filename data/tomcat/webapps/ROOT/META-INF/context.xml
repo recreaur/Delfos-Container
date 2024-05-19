@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/aplicacionbd">
+	<!--<Context antiJARLocking="true" path="/aplicacionbd">-->
+  <!-- Deshabilitar serializacion de sessiones -->
+  <Manager pathname=""/>
+</Context>

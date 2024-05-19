@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+ "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+ "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+
+<tiles-definitions>
+    
+    <definition name="baseLayout" template="/plantilla.jsp">
+        <put-attribute name="title" value="Template"/>
+        <put-attribute name="navbar" value="/navbar.jsp"/>
+        <put-attribute name="body" value="/body.jsp"/>
+    </definition>
+    
+    <definition name="index" extends="baseLayout">
+        <put-attribute name="title" value="Bienvenido"/>
+        <put-attribute name="body" value="/index.jsp"/>
+    </definition>
+    
+    <definition name="notfound" extends="baseLayout">
+        <put-attribute name="title" value="Página no encontrada"/>
+        <put-attribute name="body" value="/notfound.jsp"/>
+    </definition>
+    
+    <definition name="exception" extends="baseLayout">
+        <put-attribute name="title" value="Excepción"/>
+        <put-attribute name="body" value="/exception.jsp"/>
+    </definition>
+    
+    <definition name="login" extends="baseLayout">
+        <put-attribute name="title" value="Login"/>
+        <put-attribute name="body" value="/usuario/login.jsp"/>
+    </definition>
+    
+    <definition name="recordar" extends="baseLayout">
+        <put-attribute name="title" value="Recordar"/>
+        <put-attribute name="body" value="/usuario/recordar.jsp"/>
+    </definition>
+    
+    <definition name="habilitar" extends="baseLayout">
+        <put-attribute name="title" value="Habilitar"/>
+        <put-attribute name="body" value="/usuario/habilitar.jsp"/>
+    </definition>
+    
+    <definition name="perfil" extends="baseLayout">
+        <put-attribute name="title" value="Perfil"/>
+        <put-attribute name="body" value="/usuario/perfil.jsp"/>
+    </definition>
+    
+    <!-- Alumno -->
+    
+    <definition name="inicioAlumno" extends="baseLayout">
+        <put-attribute name="title" value="Inicio alumno"/>
+        <put-attribute name="body" value="/alumno/panel.jsp"/>
+    </definition>
+    
+    <definition name="ejercicio" extends="baseLayout">
+        <put-attribute name="title" value="Práctica"/>
+        <put-attribute name="body" value="/alumno/ejercicio.jsp"/>
+    </definition>
+    
+    <definition name="ejercicioRepaso" extends="baseLayout">
+        <put-attribute name="title" value="Repaso"/>
+        <put-attribute name="body" value="/alumno/ejercicioRepaso.jsp"/>
+    </definition>
+    
+    <definition name="resumenPractica" extends="baseLayout">
+        <put-attribute name="title" value="Resumen de la práctica"/>
+        <put-attribute name="body" value="/alumno/resumenPractica.jsp"/>
+    </definition>
+    
+    <definition name="resumenRepaso" extends="baseLayout">
+        <put-attribute name="title" value="Resumen del repaso"/>
+        <put-attribute name="body" value="/alumno/resumenRepaso.jsp"/>
+    </definition>
+    
+    <!-- Profesor -->
+
+    <definition name="profesorLayout" extends="baseLayout">
+	<put-attribute name="tabs" value="/profesor/tabs.jsp"/>
+    </definition>
+
+    <definition name="inicioProfesor" extends="baseLayout">
+        <put-attribute name="title" value="Inicio profesor"/>
+        <put-attribute name="body" value="/profesor/panel.jsp"/>
+    </definition>
+    
+    <definition name="profesores" extends="profesorLayout">
+        <put-attribute name="title" value="Profesores"/>
+        <put-attribute name="body" value="/profesor/profesores.jsp"/>
+    </definition>
+    
+    <definition name="alumnos" extends="profesorLayout">
+        <put-attribute name="title" value="Alumnos"/>
+        <put-attribute name="body" value="/profesor/alumnos.jsp"/>
+    </definition>
+    
+    <definition name="esquemas" extends="profesorLayout">
+        <put-attribute name="title" value="Esquemas"/>
+        <put-attribute name="body" value="/profesor/esquemas.jsp"/>
+    </definition>
+    
+    <definition name="ejercicios" extends="profesorLayout">
+        <put-attribute name="title" value="Ejercicios"/>
+        <put-attribute name="body" value="/profesor/ejercicios.jsp"/>
+    </definition>
+    
+    <definition name="practicas" extends="profesorLayout">
+        <put-attribute name="title" value="Prácticas"/>
+        <put-attribute name="body" value="/profesor/practicas.jsp"/>
+    </definition>
+    
+    <definition name="ejerciciosPractica" extends="profesorLayout">
+        <put-attribute name="title" value="Ejercicios de una práctica"/>
+        <put-attribute name="body" value="/profesor/ejerciciosPractica.jsp"/>
+    </definition>
+    
+    <definition name="entregas" extends="profesorLayout">
+        <put-attribute name="title" value="Entregas"/>
+        <put-attribute name="body" value="/profesor/entregas.jsp"/>
+    </definition>
+    
+    <definition name="repasos" extends="profesorLayout">
+        <put-attribute name="title" value="Repasos"/>
+        <put-attribute name="body" value="/profesor/repasos.jsp"/>
+    </definition>
+    
+</tiles-definitions>

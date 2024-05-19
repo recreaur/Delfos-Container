@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    
+    <include file="struts-constants.xml"/>    
+    
+    <package name="default" extends="struts-default, json-default" abstract="true">
+	<result-types>
+	    <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
+	    <result-type name="tilesAndHttpStatus" class="es.didiez.struts.result.TilesAndHttpStatusResult"/>
+	    <result-type name="json" class="org.apache.struts2.json.JSONResult">
+		<param name="root">action</param>
+	    </result-type>
+	    <result-type name="json-secured" class="es.didiez.struts.result.JSONSecuredResult">
+		<param name="root">action</param>
+	    </result-type>
+	</result-types>
+		
+	<interceptors>
+	    <interceptor name="perfiles" class="es.didiez.struts.interceptor.PerfilesInterceptor"/>
+	    <interceptor name="devModeInterceptor" class="es.didiez.struts.interceptor.DevModeInterceptor"/>
+	    <interceptor name="cachingHeadersInterceptor" class="es.didiez.struts.interceptor.CachingHeadersInterceptor" />
+			
+	    <interceptor-stack name="baseStack">
+		<interceptor-ref name="devModeInterceptor"/>
+		<interceptor-ref name="perfiles"/>
+		<interceptor-ref name="store">
+		    <param name="operationMode">AUTOMATIC</param>
+		</interceptor-ref>
+		<interceptor-ref name="exception">
+		    <param name="logEnabled">true</param>
+		    <param name="logLevel">error</param>
+		</interceptor-ref>
+                <interceptor-ref name="servletConfig"/>
+                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="checkbox"/>
+                <interceptor-ref name="multiselect"/>
+                <interceptor-ref name="staticParams"/>
+                <interceptor-ref name="params">
+                    <param name="excludeParams">dojo\..*,^struts\..*,^session\..*,^request\..*,^application\..*,^servlet(Request|Response)\..*,parameters\...*</param>
+                </interceptor-ref>
+		<interceptor-ref name="prepare"/>
+		<interceptor-ref name="scope"/>
+                <interceptor-ref name="conversionError"/>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+		<interceptor-ref name="cachingHeadersInterceptor"/>		
+	    </interceptor-stack>			
+	</interceptors>
+		
+	<default-interceptor-ref name="baseStack"/>
+		
+	<default-action-ref name="notfound"/>
+	
+	<default-class-ref class="es.didiez.actions.base.BaseAction" />
+		
+	<global-results>
+	    <result name="login" type="redirectAction">
+		<param name="actionName">login</param>
+		<param name="namespace">/</param>
+	    </result>
+			
+	    <result name="notfound" type="tilesAndHttpStatus">
+		<param name="location">notfound</param>
+		<param name="status">404</param>
+	    </result>
+	    <result name="exception" type="tilesAndHttpStatus">
+		<param name="location">exception</param>
+		<param name="status">500</param>
+	    </result>
+	</global-results>
+	
+	<global-exception-mappings>
+	    <exception-mapping exception="java.lang.Exception" result="exception"/>
+	</global-exception-mappings>
+	
+	<action name="notfound">
+	    <result type="tilesAndHttpStatus">
+		<param name="location">notfound</param>
+		<param name="status">404</param>
+	    </result>
+	</action>
+    </package>
+    
+    
+    <!-- Actions de Usuario -->
+    <package name="usuario" extends="default" namespace="/">
+		
+	<action name="">
+	    <result type="tiles">index</result>
+	</action>
+
+	<!-- Login y logout -->
+	<action name="login" class="es.didiez.actions.usuario.LoginAction" method="mostrarLogin">
+	    <interceptor-ref name="baseStack">
+		<param name="scope.key">userdata</param>
+		<param name="scope.session">username, email</param>
+		<param name="scope.type">end</param>
+	    </interceptor-ref>
+	    <result type="tiles">login</result>
+	    <result name="input" type="tiles">login</result>
+	    <result name="alumno" type="redirectAction">alumno/</result>
+	    <result name="profesor" type="redirectAction">profesor/</result>
+	</action>
+		
+	<action name="peticionLogin" class="es.didiez.actions.usuario.LoginAction">
+	    <interceptor-ref name="baseStack">
+		<param name="scope.key">userdata</param>
+		<param name="scope.session">username, email</param>
+		<param name="scope.type">start</param>
+	    </interceptor-ref>
+	    <result type="redirectAction">login</result>
+	    <result name="input" type="redirectAction">login</result>
+	    <result name="habilitar" type="redirectAction">habilitar</result>
+	</action>
+	
+	<action name="logout" class="es.didiez.actions.usuario.LoginAction" method="logout">
+	    <!-- Solo devuelve Action.LOGIN y ya esta definido en las variables globales -->
+	</action>
+	
+	<!-- Mostrar formulario y enviar nueva contraseña -->
+	<action name="recordar" class="es.didiez.actions.usuario.RecordarAction" method="input">
+	     <interceptor-ref name="baseStack">
+		<param name="scope.key">userdata</param>
+		<param name="scope.session">username, email</param>
+		<param name="scope.type">end</param>
+	    </interceptor-ref>
+	    <result name="input" type="tiles">recordar</result>
+	</action>	
+	
+	<action name="peticionRecordar" class="es.didiez.actions.usuario.RecordarAction" method="recordar">
+	    <interceptor-ref name="baseStack">
+		<param name="scope.key">userdata</param>
+		<param name="scope.session">username, email</param>
+		<param name="scope.type">start</param>
+	    </interceptor-ref>
+	    <result type="redirectAction">login</result>
+	    <result name="input" type="redirectAction">recordar</result>
+	</action>
+	
+	<!-- Mostrar, enviar email y confirmar link de activacion de alumnos -->
+	<action name="habilitar" class="es.didiez.actions.usuario.HabilitarAction" method="input">
+	    <interceptor-ref name="baseStack">
+		<param name="scope.key">userdata</param>
+		<param name="scope.session">username, email</param>
+		<param name="scope.type">end</param>
+	    </interceptor-ref>
+	    <result name="input" type="tiles">habilitar</result>
+	</action>
+		
+	<action name="peticionHabilitar" class="es.didiez.actions.usuario.HabilitarAction" method="habilitar">
+	    <interceptor-ref name="baseStack">
+		<param name="scope.key">userdata</param>
+		<param name="scope.session">username, email</param>
+		<param name="scope.type">start</param>
+	    </interceptor-ref>
+	    <result type="redirectAction">login</result>
+	    <result name="input" type="redirectAction">habilitar</result>
+	</action>
+		
+	<action name="habilitarCuenta" class="es.didiez.actions.usuario.HabilitarAction" method="habilitarCuenta">
+	    <result type="redirectAction">login</result>
+	</action>
+	
+	<!-- Mostrar y actualizar perfil de usuario -->
+	<action name="perfil" class="es.didiez.actions.usuario.EditarPerfilAction" method="input">
+	    <interceptor-ref name="baseStack">
+		<param name="scope.key">userdata</param>
+		<param name="scope.session">email</param>
+		<param name="scope.type">end</param>
+	    </interceptor-ref>
+	    <result name="input" type="tiles">perfil</result>
+	</action>
+		
+	<action name="actualizarPerfil" class="es.didiez.actions.usuario.EditarPerfilAction" method="actualizar">
+	    <interceptor-ref name="baseStack">
+		<param name="scope.key">userdata</param>
+		<param name="scope.session">email</param>
+		<param name="scope.type">start</param>
+	    </interceptor-ref> 
+	    <result type="redirectAction">perfil</result>
+	    <result name="input" type="redirectAction">perfil</result>
+	</action>
+    </package>
+    
+    <!-- Resto de paquetes -->
+
+    <include file="profesor.xml"/>
+    <include file="alumno.xml"/>
+</struts>

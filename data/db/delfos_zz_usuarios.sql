@@ -9,7 +9,7 @@ CREATE USER 'empresaUsr'@'%' IDENTIFIED BY 'empresaUsrempresaUsr';
 GRANT SELECT ON `empresa`.* TO 'empresaUsr'@'%';
 
 CREATE USER 'universidadUsr'@'%' IDENTIFIED BY 'universidadUsruniversidadUsr';
-GRANT SELECT ON `universidad`.* TO 'universidadUsr'@'%';
+GRANT SELECT ON `universidad`.* TO 'uniUsr'@'%';
 
 CREATE USER 'viajesUsr'@'%' IDENTIFIED BY 'viajesUsrviajesUsr';
 GRANT SELECT ON `viajes`.* TO 'viajesUsr'@'%';
